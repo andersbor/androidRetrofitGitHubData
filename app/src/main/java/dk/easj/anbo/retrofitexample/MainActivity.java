@@ -1,9 +1,13 @@
 package dk.easj.anbo.retrofitexample;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -12,13 +16,28 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
-
     private static final String LOG_TAG = "MINE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.mainSwipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            getAndShowData();
+            swipeRefreshLayout.setRefreshing(false); // early??
+        });
+    }
+
+    private void getAndShowData() {
+        EditText usernameView = findViewById(R.id.mainUsernameEditText);
+        String username = usernameView.getText().toString().trim();
+
+        if (username.length() == 0) {
+            usernameView.setError("No input");
+            return;
+        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.github.com/")
@@ -29,23 +48,30 @@ public class MainActivity extends AppCompatActivity {
 
         GitHubService service = retrofit.create(GitHubService.class);
 
-        Call<User> userCall = service.getUser("andersbor");
+        Call<User> userCall = service.getUser(username);
         userCall.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 // Runs on main/UI thread in Android (not in JVM)
                 // https://square.github.io/retrofit/2.x/retrofit/retrofit2/Callback.html
+                TextView messageView = findViewById(R.id.mainMessageTextView);
+                TextView nameView = findViewById(R.id.mainNameTextView);
+                TextView companyView = findViewById(R.id.mainCompanyTextView);
                 if (response.isSuccessful()) {
                     String message = response.message();
                     User user = response.body();
                     Log.d(LOG_TAG, message + " " + user);
-                    TextView nameView = findViewById(R.id.mainNameTextView);
-                    TextView companyView = findViewById(R.id.mainCompanyTextView);
                     nameView.setText(user.getName());
                     companyView.setText(user.getCompany());
+                    messageView.setText("");
                 } else { // response code not 2xx
-                    TextView view = findViewById(R.id.mainMessageTextView);
-                    view.setText(String.format("Not working %d %s", response.code(), response.message()));
+                    nameView.setText("");
+                    companyView.setText("");
+                    if (response.code() == 404) {
+                        messageView.setText("No such user: " + username);
+                    } else {
+                        messageView.setText(String.format("Not working %d %s", response.code(), response.message()));
+                    }
                 }
             }
 
@@ -64,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MINE", e.getMessage());
         }
         */
+    }
 
+    public void getInformationClicked(View view) {
+        getAndShowData();
     }
 }

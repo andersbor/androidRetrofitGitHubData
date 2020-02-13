@@ -6,22 +6,53 @@
     android:orientation="vertical"
     tools:context="dk.easj.anbo.retrofitexample.MainActivity">
 
-    <TextView
-        android:id="@+id/mainNameTextView"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/mainUsernameEditText"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Name" />
+        android:hint="Github username"
+        android:inputType="text"
+        android:onClick="getInformationClicked" />
 
-    <TextView
-        android:id="@+id/mainCompanyTextView"
-        android:layout_width="wrap_content"
+    <Button
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Name" />
+        android:onClick="getInformationClicked"
+        android:text="Get information" />
 
-    <TextView
-        android:id="@+id/mainMessageTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/mainSwipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/mainNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="Name" />
+
+                <TextView
+                    android:id="@+id/mainCompanyTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="Company" />
+
+                <TextView
+                    android:id="@+id/mainMessageTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </ScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>
