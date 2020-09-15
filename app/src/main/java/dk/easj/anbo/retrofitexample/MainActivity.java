@@ -17,11 +17,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = "MINE";
+    private TextView messageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        messageView = findViewById(R.id.mainMessageTextView);
 
         final SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.mainSwipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -52,21 +54,23 @@ public class MainActivity extends AppCompatActivity {
         userCall.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                // Runs on main/UI thread in Android (not in JVM)
+                // onResponse runs on main/UI thread in Android (not in JVM)
                 // https://square.github.io/retrofit/2.x/retrofit/retrofit2/Callback.html
-                TextView messageView = findViewById(R.id.mainMessageTextView);
                 TextView nameView = findViewById(R.id.mainNameTextView);
                 TextView companyView = findViewById(R.id.mainCompanyTextView);
+                TextView locationView = findViewById(R.id.mainLocationTextView);
                 if (response.isSuccessful()) {
                     String message = response.message();
                     User user = response.body();
                     Log.d(LOG_TAG, message + " " + user);
                     nameView.setText(user.getName());
                     companyView.setText(user.getCompany());
+                    locationView.setText(user.getLocation());
                     messageView.setText("");
                 } else { // response code not 2xx
                     nameView.setText("");
                     companyView.setText("");
+                    locationView.setText("");
                     if (response.code() == 404) {
                         messageView.setText("No such user: " + username);
                     } else {
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<User> call, Throwable t) { // network problems
                 Log.e(LOG_TAG, t.getMessage());
+                messageView.setText(t.getMessage());
                 // Example: Unable to resolve host "api.github.comkk": No address associated with hostname
             }
         });

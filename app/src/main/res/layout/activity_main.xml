@@ -47,9 +47,16 @@
                     android:hint="Company" />
 
                 <TextView
+                    android:id="@+id/mainLocationTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="Location" />
+
+                <TextView
                     android:id="@+id/mainMessageTextView"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="Message view" />
             </LinearLayout>
         </ScrollView>
 
