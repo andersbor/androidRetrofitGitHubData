@@ -18,6 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = "MINE";
     private TextView messageView;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +26,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         messageView = findViewById(R.id.mainMessageTextView);
 
-        final SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.mainSwipeRefresh);
+        swipeRefreshLayout = findViewById(R.id.mainSwipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(() -> {
+            swipeRefreshLayout.setRefreshing(true); // show progress
             getAndShowData();
-            swipeRefreshLayout.setRefreshing(false); // early??
         });
     }
 
@@ -41,10 +42,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        // from https://square.github.io/retrofit/
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.github.com/")
-                // https://futurestud.io/tutorials/retrofit-2-adding-customizing-the-gson-converter
-                // Gson is no longer the default converter
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 TextView nameView = findViewById(R.id.mainNameTextView);
                 TextView companyView = findViewById(R.id.mainCompanyTextView);
                 TextView locationView = findViewById(R.id.mainLocationTextView);
+                swipeRefreshLayout.setRefreshing(false); // stop progress-"bar"
                 if (response.isSuccessful()) {
                     String message = response.message();
                     User user = response.body();
