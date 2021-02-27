@@ -87,15 +87,6 @@ public class MainActivity extends AppCompatActivity {
                 // Example: Unable to resolve host "api.github.comkk": No address associated with hostname
             }
         });
-        /*
-        try {
-            Response<User> response = user.execute();
-            String message = response.message();
-            Log.d("MINE", message);
-        } catch (IOException e) {
-            Log.d("MINE", e.getMessage());
-        }
-        */
     }
 
     public void getInformationClicked(View view) {
